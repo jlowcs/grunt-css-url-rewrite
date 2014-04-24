@@ -113,24 +113,34 @@ exports.init = function(grunt) {
           }
         }
 
-        exports.image(loc, opts, function(err, resp) {
-          if (err == null) {
-            if(!opts.stripParameters && params && params.length > 0) {
-              loc = loc + params.join('');
-            }
-
-            if(opts.rewriteUrl) {
-              resp = opts.rewriteUrl(loc, opts, resp);
-            }
-
-            var url = 'url("' + resp + '")';
-            result += url;
-          } else {
-            result += group[2];
+        var computeResult = function(base64) {   
+          if(!opts.stripParameters && params && params.length > 0) {
+            loc = loc + params.join('');
           }
 
+          var resp = base64 || img;
+          if(opts.rewriteUrl) {
+            resp = opts.rewriteUrl(loc, opts, base64, img);
+          }
+
+          var url = 'url("' + resp + '")';
+          result += url;
+
           complete();
-        });
+        }
+
+        if (opts.encodeBase64 !== false) {
+          exports.image(loc, opts, function(err, resp) {
+            if (err == null) {
+              computeResult(resp);   
+            } else {
+              result += group[2];
+              complete();
+            }
+          });
+        } else {
+          computeResult(null);
+        }
       } else {
         result += group[4];
         complete();

@@ -32,7 +32,7 @@ grunt.initConfig({
       dest: "css/output.css",
       options: {
         skipExternal: true,
-        rewriteUrl: function(url, options, dataURI) {
+        rewriteUrl: function(url, options, dataURI, cssUrl) {
           var path = url.replace(options.baseDir, '');
           var hash = require('crypto').createHash('md5').update(dataURI).digest('hex');
           return '/v-' + hash + '/' + path;
@@ -117,6 +117,7 @@ CssUrlRewrite can be customized by specifying the following options:
 * `stripParameters`: Remove querystring-parameters from url's.
 * `skipExternal`: Skip external url's. Rewriting external url's doesn't always work yet, so this could be necessary for good results.
 * `parallel`: true to execute the rewrite asynchronously for each file. Default value is true.
+* `encodeBase64`: true to generate a base 64 string representation of the image that will be passed to `rewriteUrl` as a third parameter. Default value is true.
 
 ### Skipping Images
 
