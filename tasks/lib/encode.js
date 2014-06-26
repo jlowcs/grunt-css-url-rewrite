@@ -55,7 +55,7 @@ exports.init = function(grunt) {
 
     var src = file.read(srcFile);
     var result = "";
-    var match, img, line, tasks, group, params;
+    var match, img, cssUrl, line, tasks, group, params;
 
     async.whilst(function() {
       group = rImages.exec(src);
@@ -77,9 +77,10 @@ exports.init = function(grunt) {
           .replace(rQuotes, "")
           .match(rParams);
 
-        img = group[3].trim()
-          .replace(rQuotes, "")
-          .replace(rParams, ""); // remove query string/hash parmams in the filename, like foo.png?bar or foo.png#bar
+		cssUrl = group[3].trim()
+          .replace(rQuotes, "");
+
+        img = cssUrl.replace(rParams, ""); // remove query string/hash parmams in the filename, like foo.png?bar or foo.png#bar
 
         // Ignore and strip off by querystring
         if(_.indexOf(params, "?gruntCssUrlRewrite=skip") > -1) {
@@ -118,9 +119,9 @@ exports.init = function(grunt) {
             loc = loc + params.join('');
           }
 
-          var resp = base64 || img;
+          var resp = base64 || cssUrl;
           if(opts.rewriteUrl) {
-            resp = opts.rewriteUrl(loc, opts, base64, img);
+            resp = opts.rewriteUrl(loc, opts, base64, cssUrl);
           }
 
           var url = 'url("' + resp + '")';
